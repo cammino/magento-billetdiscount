@@ -16,40 +16,23 @@ class Cammino_Billetdiscount_Helper_Data extends Mage_Core_Helper_Abstract
 		return Mage::getStoreConfig('catalog/billetdiscount/ruleid');
 	}
 
-	public function getPriceWithDiscount($product){
+	public function getBilletTotal($price){
 		$ruleId = $this->getRuleId();
-		$data = $this->getQuoteData($product);
-		$grandTotal = $data['grand_total'];
 		
-		$rule = Mage::getModel('salesrule/rule')->load($ruleId);
-		$discount = $rule["discount_amount"] / 100;
+		$billetDiscountRule = Mage::getModel('salesrule/rule')->load($ruleId);
+        $billetDiscountVal = 1;
+		
+		$billetDiscountVal = ((100 - floatval($billetDiscountRule["discount_amount"])) / 100);
+		$newPrice = $price * $billetDiscountVal;
 
-		$finalPrice = $grandTotal - ($grandTotal * $discount);
-		
-		return $finalPrice;
+		return $price == $newPrice ? 0 : $this->currency($newPrice);
 	}
 
-	public function getQuoteData($product){
-		$storeId = Mage::app()->getStore()->getStoreId();
-		
-		$quote = Mage::getModel('sales/quote')->setStoreId($storeId);
-    	
-		$stockItem = Mage::getModel('cataloginventory/stock_item');
-    	$stockItem->assignProduct($product)
-      		->setData('stock_id', 1)
-      		->setData('store_id', $storeId);
+	private function getQuote(){
+        return $this->_session->getQuote();
+    }
 
-    	$stockItem->setUseConfigManageStock(false);
-    	$stockItem->setManageStock(false);
-    	
-    	$quote->addProduct($product, 1);
-    	$quote->getShippingAddress()->setCountryId('BR');
-    	$quote->collectTotals();
-
-    	return $quote;
-	}
-
-	public function getDiscount($product){
-
-	}
+    private function currency($price){
+        return Mage::helper('core')->currency($price, true, false);
+    }
 }
