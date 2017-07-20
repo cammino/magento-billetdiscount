@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Cammino_Billetdiscount>
+            <version>0.0.1</version>
+        </Cammino_Billetdiscount>
+    </modules>
+    <global>
+		<helpers>
+            <billetdiscount>
+                <class>Cammino_Billetdiscount_Helper</class>
+            </billetdiscount>
+        </helpers>
+    </global>
+</config>
