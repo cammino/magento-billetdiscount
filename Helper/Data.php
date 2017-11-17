@@ -20,12 +20,15 @@ class Cammino_Billetdiscount_Helper_Data extends Mage_Core_Helper_Abstract
 		$ruleId = $this->getRuleId();
 		
 		$billetDiscountRule = Mage::getModel('salesrule/rule')->load($ruleId);
-        $billetDiscountVal = 1;
-		
-		$billetDiscountVal = ((100 - floatval($billetDiscountRule["discount_amount"])) / 100);
-		$newPrice = $price * $billetDiscountVal;
+		if ($billetDiscountRule['is_active']) {
+	        $billetDiscountVal = 1;
+			$billetDiscountVal = ((100 - floatval($billetDiscountRule["discount_amount"])) / 100);
+			$newPrice = $price * $billetDiscountVal;
 
-		return $price == $newPrice ? 0 : $this->currency($newPrice);
+			return $price == $newPrice ? 0 : $this->currency($newPrice);
+		}
+		else 
+			return '';
 	}
 
 	private function getQuote(){
