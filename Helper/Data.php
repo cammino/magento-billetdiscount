@@ -17,17 +17,27 @@ class Cammino_Billetdiscount_Helper_Data extends Mage_Core_Helper_Abstract
 	}
 
 	// get value of billet with discount
-	public function getBilletTotal($price, $shipping = 0){
+	public function getBilletTotal($price, $shipping = 0, $showEvenIfDontHaveDiscount = false){
 		$billetDiscount = $this->getPercentDiscount();
 
 		if (!empty($billetDiscount)) {
 	        $billetDiscountVal = 1;
 			$billetDiscountVal = ((100 - floatval($billetDiscount)) / 100);
 			$newPrice = bcdiv(((($price - $shipping) * $billetDiscountVal) + $shipping), 1, 2);
-			return $price == $newPrice ? 0 : $this->currency($newPrice);
+			
+			if($showEvenIfDontHaveDiscount) {
+				return $price == $newPrice ? $this->currency($price) : $this->currency($newPrice);
+			} else {
+				return $price == $newPrice ? 0 : $this->currency($newPrice);
+			}
 		}
-		else 
-			return '';
+		else {
+			if($showEvenIfDontHaveDiscount) {
+				return $this->currency($price);
+			} else {
+				return '';
+			}
+		}
 	}
 
 	private function getQuote(){
